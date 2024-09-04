@@ -48,7 +48,7 @@ jobs:
         run: pnpm run build
 
       - name: 🔄️ Sync Android project
-        run: pnpx @capacitor/cli cap sync android
+        run: pnpx @ionic/cli cap sync android
 
       - name: 🛠️ Build APK
         run: cd android && ./gradlew :app:assembleRelease
