@@ -38,8 +38,11 @@ jobs:
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
         with:
-          fileName: "keystore/logistiko-keystore.jks"
+          fileName: "keystore/keystore.jks"
           encodedString: ${{ secrets.KEYSTORE }}
+
+      - name: ls
+        run: ls keystore && exit 1
 
       - name: 📦 Install dependencies
         run: pnpm install
