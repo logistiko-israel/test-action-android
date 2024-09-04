@@ -1,0 +1,71 @@
+name: build android
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: ✅ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🌏 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: 🌏 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "pnpm"
+
+      - name: 🌏 Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "microsoft"
+          java-version: "17"
+
+      - name: 🌏 Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-home-cache-cleanup: true
+
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: "keystore/logistiko-keystore.jks"
+          encodedString: ${{ secrets.KEYSTORE }}
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🛠️ Build for production
+        run: pnpm run build
+
+      - name: 🔄️ Sync Android project
+        run: pnpm run capacitor:sync
+
+      - name: 🛠️ Build APK
+        run: cd android && ./gradlew :app:assembleRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.PASSWORD }}
+
+      - name: 🛠️ Build App Bundle
+        run: cd android && ./gradlew :app:bundleRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.PASSWORD }}
+
+      - name: ☁️ Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: android/app/build/
