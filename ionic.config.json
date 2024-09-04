@@ -1,0 +1,7 @@
+{
+  "name": "test-android-build",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
