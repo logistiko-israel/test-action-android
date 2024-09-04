@@ -42,7 +42,7 @@ jobs:
           encodedString: ${{ secrets.KEYSTORE }}
 
       - name: ls
-        run: ls keystore && exit 1
+        run: ls && exit 1
 
       - name: 📦 Install dependencies
         run: pnpm install
