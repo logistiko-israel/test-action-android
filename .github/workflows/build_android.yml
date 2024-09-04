@@ -32,7 +32,7 @@ jobs:
       - name: 🌏 Setup Gradle Cache
         uses: gradle/actions/setup-gradle@v4
         with:
-          cache-cleanup: true
+          cache-cleanup: on-success
 
       - name: Decode Keystore
         id: decode_keystore
